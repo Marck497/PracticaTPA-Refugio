@@ -17,14 +17,14 @@ from voluntario import Voluntario
 
 def construir_refugio_demo() -> Refugio:
     animales = [
-        Animal("CHIP001", "Rex", "Perro", 22.5, "Macho", date(2021, 3, 12)),
-        Animal("CHIP002", "Luna", "Gata", 4.1, "Hembra", date(2022, 7, 1)),
-        Animal("CHIP003", "Toby", "Perro", 15.0, "Macho", date(2020, 11, 23)),
-        Animal("CHIP004", "Nina", "Gata", 3.8, "Hembra", date(2023, 1, 15)),
-        Animal("CHIP005", "Max", "Perro", 30.2, "Macho", date(2019, 5, 30)),
-        Animal("CHIP006", "Coco", "Conejo", 1.6, "Hembra", date(2024, 2, 9)),
-        Animal("CHIP007", "Simba", "Gato", 5.0, "Macho", date(2021, 9, 18)),
-        Animal("CHIP008", "Bella", "Perro", 18.4, "Hembra", date(2022, 12, 4)),
+        Animal("CHIP001", "Rex", "Perro", 22.5, "Macho", (2021, 3, 12)),
+        Animal("CHIP002", "Luna", "Gata", 4.1, "Hembra", (2022, 7, 1)),
+        Animal("CHIP003", "Toby", "Perro", 15.0, "Macho", (2020, 11, 23)),
+        Animal("CHIP004", "Nina", "Gata", 3.8, "Hembra", (2023, 1, 15)),
+        Animal("CHIP005", "Max", "Perro", 30.2, "Macho", (2019, 5, 30)),
+        Animal("CHIP006", "Coco", "Conejo", 1.6, "Hembra", (2024, 2, 9)),
+        Animal("CHIP007", "Simba", "Gato", 5.0, "Macho", (2021, 9, 18)),
+        Animal("CHIP008", "Bella", "Perro", 18.4, "Hembra", (2022, 12, 4)),
     ]
 
     refugio = Refugio(nombre="Refugio Esperanza", animales=animales)
@@ -35,7 +35,7 @@ def construir_refugio_demo() -> Refugio:
     refugio.asignar_voluntario(voluntario, "CHIP001")
 
     revision = RevisionVeterinaria(
-        fecha=date(2026, 1, 10),
+        fecha=date(2026, 1, 10),#podemos seguir usando las revisiones medicas como date
         motivo="Revisión general",
         diagnostico="Sano",
         tratamiento="Ninguno",

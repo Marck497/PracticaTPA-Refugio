@@ -1,5 +1,4 @@
 from datetime import date
-
 from revision_veterinaria import RevisionVeterinaria
 from voluntario import Voluntario
 
@@ -13,7 +12,7 @@ class Animal:
             especie: str,
             peso: float,
             sexo: str,
-            fecha_nacimiento: date,
+            fecha_nacimiento: tuple[int, int, int],
             estado_adopcion: str = "disponible",
             historial_veterinario: list[RevisionVeterinaria] = None,
             voluntarios_asignados: list[Voluntario] = None
@@ -40,11 +39,11 @@ class Animal:
 
     @property
     def edad(self) -> int:
-        """Edad en años completos, se calcula con la fecha_nacimiento"""
+        """Edad en años completos, calculada dinámicamente desde la tupla (año, mes, día)"""
         hoy = date.today()
-        anios = hoy.year - self.fecha_nacimiento.year
-        # SI no ha llegado al cumple, se quita un año
-        if (hoy.month, hoy.day) < (self.fecha_nacimiento.month, self.fecha_nacimiento.day):
+        anios = hoy.year - self.fecha_nacimiento[0]
+        
+        if (hoy.month, hoy.day) < (self.fecha_nacimiento[1], self.fecha_nacimiento[2]):
             anios -= 1
 
         return anios
