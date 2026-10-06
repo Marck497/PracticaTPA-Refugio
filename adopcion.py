@@ -18,3 +18,10 @@ class Adopcion:
             f"Adopcion(animal={self.animal.id_chip!r}, "
             f"adoptante={self.adoptante.dni!r}, fecha={self.fecha!r})"
         ) 
+
+    def resumen(self) -> str:
+        """Implementación del rol Resumible (Apartado 2, Práctica 2)."""
+        return (
+            f"Adopción: {self.animal.nombre} adoptado/a por "
+            f"{self.adoptante.nombre} el {self.fecha}"
+        )

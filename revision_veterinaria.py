@@ -17,3 +17,10 @@ class RevisionVeterinaria:
             f"(RevisionVeterinaria(fecha={self.fecha}, motivo={self.motivo}, )"
             f"diagnóstico={self.diagnostico}, tratamiento={self.tratamiento})"
         )
+
+    def resumen(self) -> str:
+        """Implementación del rol Resumible (Apartado2, Práctica 2)"""
+        return(
+            f"Revisión veterinaria del {self.fecha}: {self.motivo} - "
+            f"diagnóstico: {self.diagnostico}, tratamiento: {self.tratamiento}"
+        )
