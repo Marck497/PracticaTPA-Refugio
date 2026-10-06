@@ -58,6 +58,39 @@ class Animal:
         if voluntario not in self.voluntarios_asignados:
             self.voluntarios_asignados.append(voluntario)
 
+    def to_dict(self) -> dict:
+        # Los voluntarios se guardan solo por DNI (referencia), no copiados.
+        return {
+            "id_chip": self.id_chip,
+            "nombre": self.nombre,
+            "especie": self.especie,
+            "peso": self.peso,
+            "sexo": self.sexo,
+            "fecha_nacimiento": list(self.fecha_nacimiento),
+            "estado_adopcion": self.estado_adopcion,
+            "historial_veterinario": [r.to_dict() for r in self.historial_veterinario],
+            "voluntarios_asignados": [v.dni for v in self.voluntarios_asignados],
+        }
+
+    @classmethod
+    def from_dict(cls, datos: dict, voluntarios_por_dni: dict) -> "Animal":
+        return cls(
+            id_chip=datos["id_chip"],
+            nombre=datos["nombre"],
+            especie=datos["especie"],
+            peso=datos["peso"],
+            sexo=datos["sexo"],
+            # JSON no tiene tuplas: llega como lista y hay que volver a tupla
+            fecha_nacimiento=tuple(datos["fecha_nacimiento"]),
+            estado_adopcion=datos["estado_adopcion"],
+            historial_veterinario=[
+                RevisionVeterinaria.from_dict(r) for r in datos["historial_veterinario"]
+            ],
+            voluntarios_asignados=[
+                voluntarios_por_dni[dni] for dni in datos["voluntarios_asignados"]
+            ],
+        )
+
     def __repr__(self) -> str:
         return (
             f"Animal(id_chip={self.id_chip!r}, nombre={self.nombre!r}, "
