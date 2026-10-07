@@ -1,14 +1,6 @@
 from datetime import date
-from src.refugio.modelo.animal import Animal
-from src.refugio.modelo.adoptante import Adoptante
-from src.refugio.modelo.adopcion import Adopcion
-from src.refugio.modelo.voluntario import Voluntario
-
-class CapacidadSuperadaError(Exception):
-    """Se lanza si se intenta ingresar un animal superando la capacidad máxima."""
-
-class AnimalNoEncontradoError(Exception):
-    """Se lanza cuando no se encientra un animal por nombre o por chip"""
+from .excepciones import AnimalNoEncontradoError, CapacidadSuperadaError
+from .modelo import Adopcion, Adoptante, Animal, Voluntario
 
 class Refugio:
     """Agregado raíz del dominio: coordina animales, voluntarios y adopciones"""
