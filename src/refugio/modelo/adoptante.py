@@ -1,16 +1,16 @@
-class Adoptante:
-    """Persona que adopta (o ha adoptado) animales del refugio."""
+from .persona import Persona
 
-    def __init__(self, dni: str, nombre: str, telefono: str, correo: str):
-        self.dni = dni
-        self.nombre = nombre
-        self.telefono = telefono
+class Adoptante(Persona):
+    def __init__(self, dni, nombre, telefono, correo, max_adopciones: int = 3):
+        super().__init__(dni, nombre, telefono)
+        if max_adopciones <= 0:
+            raise ValueError("ERROR: max_adopciones debe ser positivo")
         self.correo = correo
+        self.max_adopciones = max_adopciones
 
-    def __repr__(self) -> str:
+    def descripcion(self) -> str:
+        return (f"Adoptante {self.nombre} ({self.correo}): "
+                f"puede adoptar hasta {self.max_adopciones} animales")
+
+    def __repr__(self) -> str:  
         return f"Adoptante(dni={self.dni!r}, nombre={self.nombre!r}, correo={self.correo!r})"
-
-    def __eq__(self, other: object) -> bool:
-        if not isinstance(other, Adoptante):
-            return NotImplemented
-        return self.dni == other.dni
