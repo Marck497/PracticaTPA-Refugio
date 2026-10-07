@@ -2,6 +2,8 @@ from datetime import date
 from animal import Animal
 from adoptante import Adoptante
 
+# Prueba
+
 class Adopcion:
     """
     Registro de que un Adoptante concreto adoptó un Animal concreto en una
