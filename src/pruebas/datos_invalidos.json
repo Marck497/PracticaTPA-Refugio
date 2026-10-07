@@ -1,0 +1,187 @@
+{
+  "nombre": "Refugio Esperanza",
+  "capacidad_maxima": 24,
+  "voluntarios": [
+    {
+      "dni": "00000001X",
+      "nombre": "Marcos",
+      "telefono": "600000001",
+      "area_asignada": "Perros",
+      "max_animales": 5
+    },
+    {
+      "dni": "00000002X",
+      "nombre": "Maria",
+      "telefono": "600000002",
+      "area_asignada": "Gatos",
+      "max_animales": 5
+    },
+    {
+      "dni": "00000003X",
+      "nombre": "Gonzalo",
+      "telefono": "600000003",
+      "area_asignada": "Perros",
+      "max_animales": 5
+    },
+    {
+      "dni": "00000004X",
+      "nombre": "Miguel",
+      "telefono": "600000004",
+      "area_asignada": "Administración",
+      "max_animales": 5
+    },
+    {
+      "dni": "00000005X",
+      "nombre": "Hugo",
+      "telefono": "600000005",
+      "area_asignada": "Gatos",
+      "max_animales": 5
+    }
+  ],
+  "animales": [
+    {
+      "id_chip": "CHIP001",
+      "nombre": "Rex",
+      "especie": "Perro",
+      "peso": 22.5,
+      "sexo": "Macho",
+      "fecha_nacimiento": [
+        2021,
+        3,
+        12
+      ],
+      "estado_adopcion": "disponible",
+      "historial_veterinario": [
+        {
+          "fecha": "2026-01-10",
+          "motivo": "Revisión general",
+          "diagnostico": "Sano",
+          "tratamiento": "Ninguno"
+        }
+      ],
+      "voluntarios_asignados": [
+        "00000001X",
+        "00000003X"
+      ]
+    },
+    {
+      "id_chip": "CHIP002",
+      "nombre": "Luna",
+      "especie": "Gata",
+      "peso": 4.1,
+      "sexo": "Hembra",
+      "fecha_nacimiento": [
+        2022,
+        7,
+        1
+      ],
+      "estado_adopcion": "adoptado",
+      "historial_veterinario": [],
+      "voluntarios_asignados": [
+        "00000002X"
+      ]
+    },
+    {
+      "id_chip": "CHIP003",
+      "nombre": "Toby",
+      "especie": "Perro",
+      "peso": 15.0,
+      "sexo": "Macho",
+      "fecha_nacimiento": [
+        2020,
+        11,
+        23
+      ],
+      "estado_adopcion": "disponible",
+      "historial_veterinario": [],
+      "voluntarios_asignados": []
+    },
+    {
+      "id_chip": "chip004",
+      "nombre": "Nina",
+      "especie": "Gata",
+      "peso": 3.8,
+      "sexo": "Hembra",
+      "fecha_nacimiento": [
+        2023,
+        1,
+        15
+      ],
+      "estado_adopcion": "disponible",
+      "historial_veterinario": [],
+      "voluntarios_asignados": []
+    },
+    {
+      "id_chip": "CHIP005",
+      "nombre": "Max",
+      "especie": "Perro",
+      "peso": 30.2,
+      "sexo": "Macho",
+      "fecha_nacimiento": [
+        2019,
+        5,
+        30
+      ],
+      "estado_adopcion": "disponible",
+      "historial_veterinario": [],
+      "voluntarios_asignados": []
+    },
+    {
+      "id_chip": "CHIP006",
+      "nombre": "Coco",
+      "especie": "Conejo",
+      "peso": 1.6,
+      "sexo": "Hembra",
+      "fecha_nacimiento": [
+        2024,
+        2,
+        9
+      ],
+      "estado_adopcion": "disponible",
+      "historial_veterinario": [],
+      "voluntarios_asignados": []
+    },
+    {
+      "nombre": "Simba",
+      "especie": "Gato",
+      "peso": 5.0,
+      "sexo": "Macho",
+      "fecha_nacimiento": [
+        2021,
+        9,
+        18
+      ],
+      "estado_adopcion": "disponible",
+      "historial_veterinario": [],
+      "voluntarios_asignados": []
+    },
+    {
+      "id_chip": "CHIP008",
+      "nombre": "Bella",
+      "especie": "Perro",
+      "peso": 18.4,
+      "sexo": "Hembra",
+      "fecha_nacimiento": [
+        2022,
+        12,
+        4
+      ],
+      "estado_adopcion": "disponible",
+      "historial_veterinario": [],
+      "voluntarios_asignados": []
+    }
+  ],
+  "adopciones": [
+    {
+      "id_chip": "CHIP002",
+      "adoptante": {
+        "dni": "90000005H",
+        "nombre": "Hugo",
+        "telefono": "611000005",
+        "correo": "hugo@example.com",
+        "max_adopciones": 3
+      },
+      "fecha": "2026-09-20"
+    }
+  ]
+}

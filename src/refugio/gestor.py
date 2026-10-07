@@ -1,14 +1,6 @@
 from datetime import date
-from animal import Animal
-from adoptante import Adoptante
-from adopcion import Adopcion
-from voluntario import Voluntario
-
-class CapacidadSuperadaError(Exception):
-    """Se lanza si se intenta ingresar un animal superando la capacidad máxima."""
-
-class AnimalNoEncontradoError(Exception):
-    """Se lanza cuando no se encientra un animal por nombre o por chip"""
+from .excepciones import AnimalNoEncontradoError, CapacidadSuperadaError
+from .modelo import Adopcion, Adoptante, Animal, Voluntario
 
 class Refugio:
     """Agregado raíz del dominio: coordina animales, voluntarios y adopciones"""
@@ -131,6 +123,47 @@ class Refugio:
             f"Animales adoptados: {adoptados}\n"
             f"Adopciones tramitadas (histórico): {len(self.adopciones)}\n"
             f"Voluntarios activos: {len(self.voluntarios)}"
+        )
+
+    def to_dict(self) -> dict: 
+        # Voluntarios registrados + los asignados directamente a algún animal
+        todos = {v.dni: v for v in self.voluntarios}
+        for animal in self.animales:
+            for v in animal.voluntarios_asignados:
+                todos.setdefault(v.dni, v)
+        return {
+            "nombre": self.nombre,
+            "capacidad_maxima": self.capacidad_maxima,
+            "voluntarios": [v.to_dict() for v in todos.values()],
+            "animales": [a.to_dict() for a in self.animales],
+            "adopciones": [a.to_dict() for a in self.adopciones],
+        }
+
+    @classmethod
+    def from_dict(cls, datos: dict) -> "Refugio":
+        voluntarios = [Voluntario.from_dict(v) for v in datos["voluntarios"]]
+        por_dni = {v.dni: v for v in voluntarios}
+        animales = [Animal.from_dict(a, por_dni) for a in datos["animales"]]
+        por_chip = {a.id_chip: a for a in animales}
+
+        refugio = cls(
+            nombre=datos["nombre"],
+            capacidad_maxima=datos["capacidad_maxima"],
+            animales=animales,
+            voluntarios=voluntarios,
+        )
+        refugio.adopciones = [Adopcion.from_dict(a, por_chip) for a in datos["adopciones"]]
+        return refugio
+
+    def __eq__(self, other: object) -> bool:
+        if not isinstance(other, Refugio):
+            return NotImplemented
+        return (
+            self.nombre == other.nombre
+            and self.capacidad_maxima == other.capacidad_maxima
+            and self.animales == other.animales
+            and self.voluntarios == other.voluntarios
+            and self.adopciones == other.adopciones
         )
 
     def __repr__(self) -> str:
