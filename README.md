@@ -1,11 +1,11 @@
 # Refugio — Sistema de gestión de un refugio de animales
 
-Proyecto de *Técnicas de Programación Avanzada*. Es un **paquete Python sin interfaz**: contiene el modelo (animales, voluntarios, adoptantes, adopciones, revisiones) y la lógica del refugio.
+Proyecto de *Técnicas de Programación Avanzada*. Es un **paquete Python sin interfaz**: contiene el modelo (animales, voluntarios, adoptantes, adopciones, revisiones) y la lógica del refugio. Una UI futura solo tiene que importarlo.
 
 ## Requisitos
 
 - Python 3.10 o superior.
-- La biblioteca `regex` (solo la usan las pruebas de validación):
+- La biblioteca `regex` (solo la usa la prueba del apartado 6):
 
 ```powershell
 python -m pip install -r requirements.txt
@@ -32,9 +32,14 @@ Construye un refugio con 8 animales, asigna un voluntario, registra una revisió
 Cada prueba es un script que imprime su resultado. Se ejecutan como módulos (con puntos y **sin** `.py`):
 
 | Comando | Qué comprueba |
-| --- | --- |
+|---|---|
 | `python -m pruebas.prueba_practica2_apartado1` | La clase abstracta `Persona` no se puede instanciar (`TypeError`); `Voluntario` y `Adoptante` implementan `descripcion()` a su manera; la igualdad por DNI |
 | `python -m pruebas.prueba_practica2_apartado2` | El protocolo `Resumible`: `RevisionVeterinaria` y `Adopcion` lo cumplen sin heredar de una base común |
+| `python -m pruebas.prueba_practica2_apartado4` | `Repositorio[T]` genérico con animales y voluntarios (duplicados y elementos inexistentes); guardado y recarga del refugio en JSON; `==` frente a `is` entre el original y el recargado |
+| `python -m pruebas.prueba_practica2_apartado6` | El patrón del chip comparado entre `re` y `regex`; carga de un fichero con 8 registros (2 inválidos): se rechazan con excepciones propias y los 6 válidos se conservan |
+| `python -m pruebas.prueba_practica2_apartado6_cadena_raw` | Cadena raw frente a cadena normal: qué le hace Python a `\d` y a `\b` antes de que el motor de expresiones los vea |
+
+**Ficheros que generan las pruebas.** Las pruebas del 4 y del 6 crean `refugio.json` y `datos_invalidos.json` en `src/pruebas/` cada vez que se ejecutan. No hay que mantenerlos a mano. La prueba del 6 reutiliza `construir_refugio()` de la del 4, y necesita `regex` instalada.
 
 ### Usarlo como módulo (p. ej. desde una UI)
 
@@ -73,6 +78,11 @@ src/
 │       ├── adopcion.py
 │       └── revision_veterinaria.py
 └── pruebas/                  ← scripts de prueba (no forman parte del paquete)
+    ├── prueba_practica2_apartado1.py
+    ├── prueba_practica2_apartado2.py
+    ├── prueba_practica2_apartado4.py
+    ├── prueba_practica2_apartado6.py
+    └── prueba_practica2_apartado6_cadena_raw.py
 ```
 
 **Por qué esta estructura:**
@@ -133,7 +143,7 @@ __all__ = ["Refugio", "Animal", "Adoptante", ...]
 Errores típicos:
 
 | Error | Causa |
-| --- | --- |
+|---|---|
 | `No module named refugio` | Estás en otra carpeta; haz `cd src` |
 | `No module named pruebas` | Igual: no estás en `src/`, o has escrito `.py` al final |
 | `attempted relative import with no known parent package` | Has lanzado un archivo del paquete directamente; usa `python -m` |
@@ -144,5 +154,4 @@ Errores típicos:
 - **`Resumible` (Protocol)** define un rol por estructura: cualquier clase con un método `resumen()` lo cumple sin heredar de nada. Es lo que permite que `Adopcion` y `RevisionVeterinaria`, sin relación entre sí, se traten igual.
 - **`Repositorio[T]`** es genérico (`TypeVar` + `Generic`): la misma clase sirve para animales, voluntarios, etc.
 - **Persistencia en JSON:** cada clase tiene `to_dict()`/`from_dict()`. Las referencias entre objetos se guardan por clave (el chip del animal, el DNI del voluntario) y se re-enlazan al cargar.
-- **Validación:** el `id_chip` tiene formato `CHIP` + 3 dígitos, comprobado con un patrón `re` compilado una sola vez; los registros inválidos se rechazan con excepciones propias sin perder los válidos.
 - **Validación:** el `id_chip` tiene formato `CHIP` + 3 dígitos, comprobado con un patrón `re` compilado una sola vez; los registros inválidos se rechazan con excepciones propias sin perder los válidos.
