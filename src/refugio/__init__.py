@@ -9,7 +9,7 @@ solo desde aquí, p. ej.::
 
 from .excepciones import AnimalNoEncontradoError, CapacidadSuperadaError, RefugioError
 from .gestor import Refugio
-from .modelo import Adopcion, Adoptante, Animal, Persona, RevisionVeterinaria, Voluntario
+from .modelo import Adopcion, Adoptante, Animal, Persona, RevisionVeterinaria, Voluntario 
 from .protocolos import Resumible, mostrar_resumen
 
 __version__ = "0.2.0"
@@ -19,6 +19,7 @@ __all__ = [
     "Animal",
     "Adoptante",
     "Voluntario",
+    "Persona", 
     "Adopcion",
     "RevisionVeterinaria",
     "Resumible",
@@ -27,5 +28,4 @@ __all__ = [
     "CapacidadSuperadaError",
     "AnimalNoEncontradoError",
     "__version__",
-    "Persona"
 ]

@@ -12,5 +12,24 @@ class Voluntario(Persona):
         return (f"Voluntario {self.nombre}: area {self.area_asignada}, "
                 f"hasta {self.max_animales} animales")
 
-    def __repr__(self) -> str:  
+    def to_dict(self) -> dict:
+        return {
+            "dni": self.dni,
+            "nombre": self.nombre,
+            "telefono": self.telefono,
+            "area_asignada": self.area_asignada,
+            "max_animales": self.max_animales,
+        }
+
+    @classmethod
+    def from_dict(cls, datos: dict) -> "Voluntario": 
+        return cls(
+            dni=datos["dni"],
+            nombre=datos["nombre"],
+            telefono=datos["telefono"],
+            area_asignada=datos["area_asignada"],
+            max_animales=datos["max_animales"],
+        )
+
+    def __repr__(self) -> str:
         return f"Voluntario(dni={self.dni}, nombre={self.nombre}, area={self.area_asignada})"
