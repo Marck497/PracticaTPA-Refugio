@@ -1,6 +1,6 @@
 from datetime import date
-from src.refugio.modelo.revision_veterinaria import RevisionVeterinaria
-from src.refugio.modelo.voluntario import Voluntario
+from .revision_veterinaria import RevisionVeterinaria
+from .voluntario import Voluntario
 
 class Animal:
     ESTADOS_ADOPCION_VALIDOS = {"disponible", "en_proceso", "adoptado", "no_disponible"}

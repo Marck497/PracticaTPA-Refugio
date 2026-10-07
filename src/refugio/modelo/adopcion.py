@@ -1,6 +1,6 @@
 from datetime import date
-from src.refugio.modelo.animal import Animal
-from src.refugio.modelo.adoptante import Adoptante
+from .animal import Animal
+from .adoptante import Adoptante
 
 # Prueba
 
