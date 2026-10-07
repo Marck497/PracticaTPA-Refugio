@@ -1,6 +1,6 @@
-from src.refugio.modelo.adoptante import Adoptante
-from src.refugio.modelo.persona import Persona
-from src.refugio.modelo.voluntario import Voluntario
+from refugio.modelo.adoptante import Adoptante
+from refugio.modelo.persona import Persona
+from refugio.modelo.voluntario import Voluntario
 
 # 1) La clase abstracta no se puede instanciar
 try:
