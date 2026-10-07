@@ -11,7 +11,7 @@ from datetime import date
 from src.refugio.modelo.adopcion import Adopcion
 from src.refugio.modelo.adoptante import Adoptante
 from src.refugio.modelo.animal import Animal
-from refugio import Refugio
+from src.refugio.gestor import Refugio
 from src.refugio.modelo.revision_veterinaria import RevisionVeterinaria
 from src.refugio.modelo.voluntario import Voluntario
 
