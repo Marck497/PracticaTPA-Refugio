@@ -8,12 +8,12 @@ básico de todas las clases del modelo.
 """
 
 from datetime import date
-from adopcion import Adopcion
-from adoptante import Adoptante
-from animal import Animal
+from src.refugio.modelo.adopcion import Adopcion
+from src.refugio.modelo.adoptante import Adoptante
+from src.refugio.modelo.animal import Animal
 from refugio import Refugio
-from revision_veterinaria import RevisionVeterinaria
-from voluntario import Voluntario
+from src.refugio.modelo.revision_veterinaria import RevisionVeterinaria
+from src.refugio.modelo.voluntario import Voluntario
 
 def construir_refugio_demo() -> Refugio:
     animales = [

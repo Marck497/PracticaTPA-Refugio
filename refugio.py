@@ -1,8 +1,8 @@
 from datetime import date
-from animal import Animal
-from adoptante import Adoptante
-from adopcion import Adopcion
-from voluntario import Voluntario
+from src.refugio.modelo.animal import Animal
+from src.refugio.modelo.adoptante import Adoptante
+from src.refugio.modelo.adopcion import Adopcion
+from src.refugio.modelo.voluntario import Voluntario
 
 class CapacidadSuperadaError(Exception):
     """Se lanza si se intenta ingresar un animal superando la capacidad máxima."""
