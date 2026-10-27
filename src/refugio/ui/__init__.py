@@ -1,0 +1,1 @@
+"""Interfaz gráfica (tkinter). Se lanza con 'python -m refugio.ui`."""
