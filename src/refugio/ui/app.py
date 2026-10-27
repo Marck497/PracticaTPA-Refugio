@@ -1,17 +1,16 @@
 """Ventana principal: menú lateral a la izquierda y la vista activa a la derecha."""
 
 import tkinter as tk
-from functools import partial
 from tkinter import ttk
 
-from gestor import Refugio
+from refugio.gestor import Refugio
 from .vistas import Vista, VistaAdopciones, VistaAnimales, VistaVoluntarios
 
 class App(tk.Tk):
     VISTAS: tuple[type[Vista], ...] = (VistaAnimales, VistaVoluntarios, VistaAdopciones)
 
     def __init__(self, refugio: Refugio):
-        super.__init__()
+        super().__init__()
         self.title(f"Gestión de refugio - {refugio.nombre}")
         self.geometry("900x500")
         self.refugio = refugio
