@@ -1,9 +1,11 @@
 """Lanza la interfaz con datos de demostración: python -m refugio.ui"""
 
 from ..demo import construir_refugio_demo
+from ..registro import configurar_logging
 from .app import App
 
 def main() -> None:
+    configurar_logging()
     App(construir_refugio_demo()).mainloop()
 
 if __name__ == "__main__":

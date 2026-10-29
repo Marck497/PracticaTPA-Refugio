@@ -4,6 +4,7 @@ import tkinter as tk
 from tkinter import ttk
 
 from refugio.gestor import Refugio
+from .panel_log import PanelLog
 from .vistas import Vista, VistaAdopciones, VistaAnimales, VistaVoluntarios
 
 class App(tk.Tk):
@@ -14,7 +15,7 @@ class App(tk.Tk):
         self.title(f"Gestión de refugio - {refugio.nombre}")
         self.geometry("900x500")
         self.refugio = refugio
-
+        PanelLog(self).pack(side="bottom", fill="x")
         menu = ttk.Frame(self, padding=6)
         menu.pack(side="left", fill="y")
         self.contenido = ttk.Frame(self)
