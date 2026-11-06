@@ -1,6 +1,9 @@
+import logging
 from datetime import date
 from .excepciones import AnimalNoEncontradoError, CapacidadSuperadaError
 from .modelo import Adopcion, Adoptante, Animal, Voluntario
+
+logger = logging.getLogger(__name__)
 
 class Refugio:
     """Agregado raíz del dominio: coordina animales, voluntarios y adopciones"""
@@ -43,6 +46,7 @@ class Refugio:
     def registrar_ingreso(self, animal: Animal) -> None:
         """Da de alta un animal en el refugio, respetando la capacidad máxima"""
         if len(self.animales) >= self.capacidad_maxima:
+            logger.warning("Ingreso rechazado de %s: refugio lleno (%d)", animal.id_chip, self.capacidad_maxima)
             raise CapacidadSuperadaError(
                 f"El refugio {self.nombre} ya está al límite de su capacidad "
                 f"({self.capacidad_maxima} animales)."
@@ -53,6 +57,7 @@ class Refugio:
             return
 
         self.animales.append(animal)
+        logger.info("Ingreso registrado: %s (%s)", animal.nombre, animal.id_chip)
 
     def mostrar_animal(self, nombre: str) -> str:
         """Devuelve una ficha legible del primer animal que coincide con ese nombre"""
@@ -92,6 +97,7 @@ class Refugio:
             # Si el voluntario no está registrado lo añadimos
             self.voluntarios.append(voluntario)
         animal.asignar_voluntario(voluntario)
+        logger.info("Voluntario %s asignado a %s", voluntario.nombre, id_chip)
 
     def tramitar_adopcion(
             self, id_chip: str, adoptante: Adoptante, fecha: date = None
@@ -102,6 +108,7 @@ class Refugio:
         """
         animal = self.buscar_animal_por_chip(id_chip)
         if not animal.esta_disponible():
+            logger.warning("Adopción rechazada: %s no está disponible (%s)", id_chip, animal.estado_adopcion)
             raise ValueError(
                 f"El animal '{animal.nombre}' (chip {id_chip}) no está disponible "
                 f"para adopción (estado actual: {animal.estado_adopcion})."
@@ -110,6 +117,7 @@ class Refugio:
         adopcion = Adopcion(animal=animal, adoptante=adoptante, fecha=fecha or date.today())
         self.adopciones.append(adopcion)
         animal.estado_adopcion = "adoptado"
+        logger.info("Adopción registrada: %s por %s", id_chip, adoptante.nombre)
         return adopcion
 
     def informe_actividad(self) -> str:
