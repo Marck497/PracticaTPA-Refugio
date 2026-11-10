@@ -141,8 +141,11 @@ class VistaVoluntarios(Vista):
 
         animal = animales_asignados[indice]
         if messagebox.askyesno("Confirmar", f"¿Deseas desvincular a {voluntario.nombre} del animal {animal.nombre}?"):
-            if voluntario in animal.voluntarios_asignados:
-                animal.voluntarios_asignados.remove(voluntario)
+            try:
+                self.refugio.desvincular_voluntario(voluntario, animal.id_chip)
+            except (ValueError, RefugioError) as e:
+                self.mostrar_error(e)
+                return
             ventana.destroy()
             self.refrescar()
             messagebox.showinfo("Éxito", "Animal desvinculado correctamente.")
@@ -377,13 +380,11 @@ class VistaVoluntarios(Vista):
         voluntario = filtrados[indice_fila]
 
         if messagebox.askyesno("Eliminar", f"¿Seguro que deseas eliminar a {voluntario.nombre}?"):
-            for animal in self.refugio.animales:
-                if voluntario in animal.voluntarios_asignados:
-                    animal.voluntarios_asignados.remove(voluntario)
-
-            if voluntario in self.refugio.voluntarios:
-                self.refugio.voluntarios.remove(voluntario)
-
+            try:
+                self.refugio.eliminar_voluntario(voluntario)
+            except (ValueError, RefugioError) as e:
+                self.mostrar_error(e)
+                return
             self.refrescar()
 
     def refrescar(self) -> None:

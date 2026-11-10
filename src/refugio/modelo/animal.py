@@ -38,6 +38,17 @@ class Animal:
         self.__id_chip = valor
 
     @property
+    def estado_adopcion(self) -> str:
+        return self.__estado_adopcion
+
+    @estado_adopcion.setter
+    def estado_adopcion(self, valor: str) -> None:
+        if valor not in self.ESTADOS_ADOPCION_VALIDOS:
+            validos = ", ".join(sorted(self.ESTADOS_ADOPCION_VALIDOS))
+            raise ValueError(f"Estado de adopción no válido: '{valor}'. Estados posibles: {validos}.")
+        self.__estado_adopcion = valor
+
+    @property
     def edad(self) -> int:
         """Edad en años completos, calculada dinámicamente desde la tupla (año, mes, día)"""
         hoy = date.today()
@@ -57,6 +68,10 @@ class Animal:
     def asignar_voluntario(self, voluntario: Voluntario) -> None:
         if voluntario not in self.voluntarios_asignados:
             self.voluntarios_asignados.append(voluntario)
+
+    def deasignar_voluntario(self, voluntario: Voluntario) -> None:
+        if voluntario in self.voluntarios_asignados:
+            self.voluntarios_asignados.remove(voluntario)
 
     def to_dict(self) -> dict:  
         # Los voluntarios se guardan solo por DNI (referencia), no copiados.

@@ -133,6 +133,33 @@ class Refugio:
         logger.info("Adopción registrada: %s por %s", id_chip, adoptante.nombre)
         return adopcion
 
+    def cancelar_adopcion(self, adopcion: Adopcion) -> None:
+        """Elimina una adopción; si el animal no tiene otra, vuelve a estar disponible."""
+        if adopcion not in self.adopciones:
+            raise ValueError("Esa adopción no está registrada en el refugio.")
+        self.adopciones.remove(adopcion)
+        animal = adopcion.animal
+        if not any(a.animal == animal for a in self.adopciones):
+            animal.estado_adopcion = "disponible"
+        logger.info("Adopción cancelada: %s (adoptante %s)", animal.id_chip, adopcion.adoptante.nombre)
+
+    def desvincular_voluntario(self, voluntario: Voluntario, id_chip: str) -> None:
+        """Quita un voluntario de un animal concreto, identificado por su chip."""
+        animal = self.buscar_animal_por_chip(id_chip)
+        if voluntario not in animal.voluntarios_asignados:
+            raise ValueError(f"{voluntario.nombre} no está asignado al animal {id_chip}.")
+        animal.deasignar_voluntario(voluntario)
+        logger.info("Voluntario %s desvinculado de %s", voluntario.nombre, id_chip)
+
+    def eliminar_voluntario(self, voluntario: Voluntario) -> None:
+        """Da de baja a un voluntario y lo quita de todos los animales a los que estaba asignado"""
+        if voluntario not in self.voluntarios:
+            raise ValueError(f"{voluntario.nombre} no está registrado en el refugio.")
+        for animal in self.animales:
+            animal.deasignar_voluntario(voluntario)
+        self.voluntarios.remove(voluntario)
+        logger.info("Voluntario eliminado: %s", voluntario.nombre)
+
     def _aplicar_reglas(self, operacion: str, reglas: list, animal: Animal, persona) -> None:
         """Pasa todas las reglas. Si alguna falla, lo registra en el log y relanza el error"""
         for regla in reglas:
