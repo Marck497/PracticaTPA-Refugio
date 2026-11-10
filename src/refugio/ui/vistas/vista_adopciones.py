@@ -184,13 +184,8 @@ class VistaAdopciones(Vista):
                 raise ValueError("Selecciona un animal.")
             dni, nombre, telefono, correo, max_adopciones, fecha = self._leer_datos(entradas)
             chip = seleccion.split(" - ", 1)[0]
-            # El gestor se encarga de comprobar disponibilidad y marcar 'adoptado'.
-            animal = self.refugio.buscar_animal_por_chip(chip)
-            if not animal.esta_disponible():
-                raise ValueError("El animal ya no está disponible.")
+            # El gestor compruena disponibilidad y límite de adopciones (reglas) y marca 'adoptado'
             anteriores = [a for a in self.refugio.adopciones if a.adoptante.dni.upper() == dni]
-            if len(anteriores) >= max_adopciones:
-                raise ValueError("Este adoptante ha alcanzado su máximo de adopciones.")
             if anteriores:
                 existente = anteriores[0].adoptante
                 if (existente.nombre != nombre or existente.telefono != telefono
@@ -253,9 +248,11 @@ class VistaAdopciones(Vista):
             "Esto borrará el registro y devolverá el animal a disponible."
         ):
             return
-        self.refugio.adopciones.remove(adopcion)
-        if not any(a.animal.id_chip == adopcion.animal.id_chip for a in self.refugio.adopciones):
-            adopcion.animal.estado_adopcion = "disponible"
+        try:
+            self.refugio.cancelar_adopcion(adopcion)
+        except (ValueError, RefugioError) as e:
+            self._mostrar_error(e)
+            return
         self.refrescar()
 
     def _on_ver_detalles_click(self) -> None:
