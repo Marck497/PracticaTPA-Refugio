@@ -133,6 +133,19 @@ class Refugio:
         logger.info("Adopción registrada: %s por %s", id_chip, adoptante.nombre)
         return adopcion
 
+    def eliminar_animal(self, animal: Animal) -> None:
+        """Da de baja a un animal. No se puede si tiene adopciones registradas."""
+        if animal not in self.animales:
+            raise AnimalNoEncontradoError(f"El animal {animal.id_chip} no está en el refugio.")
+        if any(a.animal == animal for a in self.adopciones):
+            logger.warning("Baja rechazada: %s tiene adopciones registradas", animal.id_chip)
+            raise ReglaInclumplidaError(
+                f"No se puede eliminar a {animal.nombre} porque tiene una dopción registrada. "
+                "Elimina primero la adopción"
+            )
+        self.animales.remove(animal)
+        logger.info("Animal eliminado: %s (%s)", animal.nombre, animal.id_chip)
+
     def cancelar_adopcion(self, adopcion: Adopcion) -> None:
         """Elimina una adopción; si el animal no tiene otra, vuelve a estar disponible."""
         if adopcion not in self.adopciones:
