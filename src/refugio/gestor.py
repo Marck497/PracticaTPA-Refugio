@@ -1,7 +1,14 @@
 import logging
 from datetime import date
-from .excepciones import AnimalNoEncontradoError, CapacidadSuperadaError
+from .excepciones import AnimalNoEncontradoError, CapacidadSuperadaError, ReglaInclumplidaError
 from .modelo import Adopcion, Adoptante, Animal, Voluntario
+from .reglas import (
+    AnimalDisponible,
+    LimiteAdopciones,
+    LimiteVoluntario,
+    ReglaAdopcion,
+    ReglaAsignacion
+)
 
 logger = logging.getLogger(__name__)
 
@@ -14,6 +21,8 @@ class Refugio:
             capacidad_maxima: int = None,
             animales: list[Animal] = None,
             voluntarios: list[Voluntario] = None,
+            reglas_adopcion: list[ReglaAdopcion] = None,
+            reglas_asignacion: list[ReglaAsignacion] = None,
     ):
         self.nombre = nombre
 
@@ -21,6 +30,14 @@ class Refugio:
         self.animales: list[Animal] = animales if animales is not None else []
         self.voluntarios: list[Voluntario] = voluntarios if voluntarios is not None else []
         self.adopciones: list[Adopcion] = []
+
+        # Reglas de negocio (Patrón Strategy): se pueden sustituir al crear el refugio
+        self.reglas_adopcion: list[ReglaAdopcion] = (
+            reglas_adopcion if reglas_adopcion is not None else [AnimalDisponible(), LimiteAdopciones()]
+        )
+        self.reglas_asignacion: list[ReglaAsignacion] = (
+            reglas_asignacion if reglas_asignacion is not None else [LimiteVoluntario()]
+        ) 
 
         # Si no se indica capacidad explícita, se deriva de la ocupación 
         # inicial. (Como lo que pide el ejemplo del enunciad de los 8 casos
@@ -93,6 +110,7 @@ class Refugio:
     def asignar_voluntario(self, voluntario: Voluntario, id_chip: str) -> None:
         """Asigna un voluntario a un animal concreto, identificado por su chip"""
         animal = self.buscar_animal_por_chip(id_chip)
+        self._aplicar_reglas("Asignación", self.reglas_asignacion, animal, voluntario)
         if voluntario not in self.voluntarios:
             # Si el voluntario no está registrado lo añadimos
             self.voluntarios.append(voluntario)
@@ -107,18 +125,23 @@ class Refugio:
         adoptante, y actualiza el estado del animal
         """
         animal = self.buscar_animal_por_chip(id_chip)
-        if not animal.esta_disponible():
-            logger.warning("Adopción rechazada: %s no está disponible (%s)", id_chip, animal.estado_adopcion)
-            raise ValueError(
-                f"El animal '{animal.nombre}' (chip {id_chip}) no está disponible "
-                f"para adopción (estado actual: {animal.estado_adopcion})."
-            )
+        self._aplicar_reglas("Adopción", self.reglas_adopcion, animal, adoptante)
 
         adopcion = Adopcion(animal=animal, adoptante=adoptante, fecha=fecha or date.today())
         self.adopciones.append(adopcion)
         animal.estado_adopcion = "adoptado"
         logger.info("Adopción registrada: %s por %s", id_chip, adoptante.nombre)
         return adopcion
+
+    def _aplicar_reglas(self, operacion: str, reglas: list, animal: Animal, persona) -> None:
+        """Pasa todas las reglas. Si alguna falla, lo registra en el log y relanza el error"""
+        for regla in reglas:
+            try:
+                regla.comprobar(self, animal, persona)
+            except ReglaInclumplidaError as e:
+                logger.warning("%s rechazada: %s", operacion, e)
+                # raise para dejarlo seguir hacia arriba y conservar el traceback original
+                raise
 
     def informe_actividad(self) -> str:
         """Resumen de la actividad del refugio: ocupación, adopciones y equipo."""
