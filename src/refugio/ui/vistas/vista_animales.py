@@ -1,15 +1,19 @@
 """Vista de animales: listado del refugio con búsqueda, filtro por estado y ficha."""
 
+from datetime import date
+from functools import partial
 import tkinter as tk
-from tkinter import ttk
+from tkinter import messagebox, ttk
 
-from refugio.excepciones import AnimalNoEncontradoError
+from refugio.excepciones import AnimalNoEncontradoError, RefugioError
 from refugio.modelo import Animal
+from refugio.validacion import RegistroInvalido, validar_chip
 from .base import Vista
 
 COLUMNAS = ("chip", "nombre", "especie", "sexo", "peso", "edad", "estado")
 ANCHOS = {"chip": 90, "nombre": 130, "especie": 90, "sexo": 80, "peso": 80, "edad": 60, "estado": 110}
 TODOS = "Todos"
+SEXOS = ("Macho", "Hembra")
 
 # Cómo se ordena el listado al pulsar la cabecera de cada columna
 CLAVES_ORDEN = {
@@ -53,6 +57,9 @@ class VistaAnimales(Vista):
 
         self.contador = ttk.Label(barra)
         self.contador.pack(side="right")
+
+        ttk.Button(barra, text="Eliminar animal", command= self._on_eliminar_click).pack(side="left", padx=(0, 12))
+        ttk.Button(barra, text="Registrar ingreso", command=self._on_ingreso_click).pack(side="left", padx=(0, 12))
 
         # Ficha del animal seleccionado (abajo; se empaqueta antes que la tabla)
         ficha = ttk.LabelFrame(self, text="Ficha del animal", padding=6)
@@ -137,4 +144,86 @@ class VistaAnimales(Vista):
             f"Estado de adopción: {a.estado_adopcion}\n"
             f"Revisiones veterinarias: {len(a.historial_veterinario)}\n"
             f"Voluntarios asignados: {voluntarios}"
+        )
+
+    def _on_eliminar_click(self) -> None:
+        animal = self._animal_seleccionado()
+        if animal is None:
+            messagebox.showinfo("Aviso", "Selecciona un animal de la lista.")
+            return
+        if not messagebox.askyesno("Eliminar", f"¿Eliminar a {animal.nombre} (chip {animal.id_chip}) del refugio?"):
+            return
+        try:
+            self.refugio.eliminar_animal(animal)
+        except (ValueError, RefugioError) as e:
+            self.mostrar_error(e)
+            return
+        self.refrescar()
+        
+
+    def _on_ingreso_click(self) -> None:
+        ventana = tk.Toplevel(self)
+        ventana.title("Registrar ingreso")
+        ventana.resizable(False, False)
+        ventana.grab_set()
+
+        marco = ttk.Frame(ventana, padding=15)
+        marco.pack()
+        etiquetas = (
+            ("chip", "Chip (CHIP001):"),
+            ("nombre", "Nombre:"),
+            ("especie", "Especie:"),
+            ("sexo", "Sexo:"),
+            ("peso", "Peso (kg):"),
+            ("nacimiento", "Nacimiento (AAAA-MM-DD):"),
+        )
+        campos: dict[str, ttk.Entry] = {}
+        for fila, (clave, texto) in enumerate(etiquetas):
+            ttk.Label(marco, text=texto).grid(row=fila, column=0, sticky="e", padx=5, pady=4)
+            if clave == "sexo":
+                campo = ttk.Combobox(marco, values=SEXOS, state="readonly", width=26)
+            else:
+                campo = ttk.Entry(marco, width=28)
+            campo.grid(row=fila, column=1, sticky="w", pady=4)
+            campos[clave] = campo
+
+        ttk.Button(
+            marco, text="Guardar", command=partial(self._guardar_ingreso, ventana, campos)
+        ).grid(row=len(etiquetas), column=0, columnspan=2, pady=(12, 0))
+
+    def _guardar_ingreso(self, ventana: tk.Toplevel, campos: dict[str, ttk.Entry]) -> None:
+        try:
+            animal = self._leer_animal(campos)
+            if animal in self.refugio.animales:
+                raise ValueError(f"Ya existe un animnal con el chip {animal.id_chip}.")
+            self.refugio.registrar_ingreso(animal)
+        except (ValueError, RefugioError, RegistroInvalido) as e:
+            self.mostrar_error(e)
+            return
+        ventana.destroy()
+        self.refrescar()
+        messagebox.showinfo("Éxito", f"{animal.nombre} ha ingresado en el refugio.")
+
+    @staticmethod
+    def _leer_animal(campos: dict[str, ttk.Entry]) -> Animal:
+        """Valida lo escrito en el formulario y constuye el Animal."""
+        datos = {clave: campo.get().strip() for clave, campo in campos.items()}
+        if not all(datos.values()):
+            raise ValueError("Rellena todos los datos.")
+        chip = validar_chip({"id_chip": datos["chip"].upper()})
+        try:
+            peso = float(datos["peso"].replace(",", "."))
+        except ValueError:
+            raise ValueError("El peso debe ser un número (por ejemplo 12.5).") from None
+        if peso <= 0:
+            raise ValueError("El peso debe ser mayor que 0.")
+        try:
+            nacimiento = date.fromisoformat(datos["nacimiento"])
+        except ValueError:
+            raise ValueError("La fecha debe tener formato AAAA-MM-DD.") from None
+        if nacimiento > date.today():
+            raise ValueError("La fecha de nacimiento no puede ser futura.")
+        return Animal(
+            chip, datos["nombre"], datos["especie"], peso, datos["sexo"],
+            (nacimiento.year, nacimiento.month, nacimiento.day),
         )
