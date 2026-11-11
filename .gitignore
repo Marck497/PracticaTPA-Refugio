@@ -221,3 +221,10 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Datos y configuración de uso real (no se suben)
+/refugio.json
+/src/refugio.json
+refugio.json.bak
+refugio.json.tmp
+config.json
