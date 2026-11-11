@@ -1,3 +1,5 @@
+"""Protocolo Resumible: objetos que saben describirse con un método `resumen()`."""
+
 from __future__ import annotations
 from typing import Protocol, runtime_checkable
 
@@ -8,6 +10,7 @@ class Resumible(Protocol):
     protocolo, sin necesidad de heredar de ninguna clase común.
     """
     def resumen(self) -> str:
+        """Devuelve un texto breve que describe el objeto."""
         ...
 
 def mostrar_resumen(obj: Resumible) -> None:

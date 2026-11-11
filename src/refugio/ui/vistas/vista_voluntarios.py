@@ -12,9 +12,13 @@ AREAS_DISPONIBLES = ["Perros", "Gatos", "Exóticos", "Rehabilitación", "Adopcio
 
 
 class VistaVoluntarios(Vista):
+    """Lista de voluntarios: buscar, ordenar, crearm, modificar, eliminar y gestionar sus animales."""
+
     titulo = "Voluntarios"
 
     def construir(self) -> None:
+        """Crea la barra de búsqueda, los botones y la tabla de voluntarios."""
+
         # Variables de control para la ordenación de la tabla
         self._sort_col = None
         self._sort_reverse = False
@@ -389,6 +393,8 @@ class VistaVoluntarios(Vista):
             self.refrescar()
 
     def refrescar(self) -> None:
+        """Vuelve a rellenar la tabla con los voluntarios que cumplen el filtro actual."""
+
         filas_datos = []
         voluntarios_a_mostrar = self._obtener_voluntarios_filtrados()
         

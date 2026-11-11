@@ -40,6 +40,7 @@ class PanelDatos(ttk.LabelFrame):
         self.actualizar()
 
     def actualizar(self) -> None:
+        """Redibuja las cifras con los datos actuales del refugio."""
         datos = self.refugio.datos_generales()
         self.etiqueta.configure(text=(
             f"Animales: {datos['animales']}/{datos['capacidad']}   "

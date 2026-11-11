@@ -89,6 +89,7 @@ def construir_refugio_demo() -> Refugio:
 
 
 def main() -> None:
+    """Ejecuta la demostración por consola (`python -m refugio`)."""
     refugio = construir_refugio_demo()
 
     print(refugio.mostrar_animal("Rex"))

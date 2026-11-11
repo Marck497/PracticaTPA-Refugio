@@ -1,3 +1,5 @@
+"""RevisionVeterinaria: evento puntual del historial veterinario de un animal."""
+
 from datetime import date
 
 class RevisionVeterinaria:
@@ -13,6 +15,7 @@ class RevisionVeterinaria:
         self.tratamiento = tratamiento
 
     def to_dict(self) -> dict:
+        """Convierte la revisión en un diccionario listo para guardarse como JSON."""
         return {
             "fecha": self.fecha.isoformat(),
             "motivo": self.motivo,
@@ -22,6 +25,7 @@ class RevisionVeterinaria:
 
     @classmethod
     def from_dict(cls, datos: dict) -> "RevisionVeterinaria":
+        """Reconstruye una revisión a partir de un diccionario generado por `to_dict`."""
         return cls(
             fecha=date.fromisoformat(datos["fecha"]),
             motivo=datos["motivo"],

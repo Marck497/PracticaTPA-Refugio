@@ -17,6 +17,8 @@ logger = logging.getLogger(__name__)
 TIPOS_JSON = [("Archivos JSON", "*.json")]
 
 class App(tk.Tk):
+    """Ventana principal: menú lateral, vista activa, panel de datos y panel de log."""
+
     VISTAS: tuple[type[Vista], ...] = (VistaAnimales, VistaVoluntarios, VistaAdopciones)
 
     def __init__(self, refugio: Refugio, archivo_datos: str = None):

@@ -28,9 +28,13 @@ CLAVES_ORDEN = {
 
 
 class VistaAnimales(Vista):
+    """Listado de animales: buscar, filtrar por estado, ordenar, ver ficha, registrar ingreso y eliminar."""
+
     titulo = "Animales"
 
     def construir(self) -> None:
+        """Crea la barra de búsqueda y filtro, la tabla y la ficha del animal."""
+
         self._orden: tuple[str, bool] = ("chip", False)  # (columna, descendente)
         self._visibles: list[Animal] = []  # animales mostrados, en el mismo orden que las filas
 
@@ -77,6 +81,8 @@ class VistaAnimales(Vista):
         self._mostrar_ficha()
 
     def refrescar(self) -> None:
+        """Vuelve a rellenar la tabla respetando búsqueda, filtro, orden y selección."""
+
         # Recordamos la selección para no perderla al repintar
         seleccionado = self._animal_seleccionado()
 

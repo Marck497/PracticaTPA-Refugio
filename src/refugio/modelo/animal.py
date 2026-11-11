@@ -1,8 +1,11 @@
+"""Animal: entidad principal del refugio, con su historial veterinario y sus voluntarios."""
+
 from datetime import date
 from .revision_veterinaria import RevisionVeterinaria
 from .voluntario import Voluntario
 
 class Animal:
+    """Animal del refugio, identificado por su chip: dos animales con el mismo chip son iguales."""
     ESTADOS_ADOPCION_VALIDOS = {"disponible", "en_proceso", "adoptado", "no_disponible"}
 
     def __init__(
@@ -29,6 +32,7 @@ class Animal:
 
     @property
     def id_chip(self) -> str:
+        """Identificador único del animal (no puede estar vacío)."""
         return self.__id_chip
 
     @id_chip.setter
@@ -39,6 +43,7 @@ class Animal:
 
     @property
     def estado_adopcion(self) -> str:
+        """Estado de adopción del animal: uno de `ESTADOS_ADOPCION_VALIDOS`."""
         return self.__estado_adopcion
 
     @estado_adopcion.setter
@@ -60,20 +65,25 @@ class Animal:
         return anios
 
     def esta_disponible(self) -> bool:
+        """Indica si el animal se puede adoptar (estado `disponible`)."""
         return self.estado_adopcion == "disponible"
 
     def anadir_revision(self, revision: RevisionVeterinaria) -> None:
+        """Añade una revisión veterinaria al historial del animal."""
         self.historial_veterinario.append(revision)
 
     def asignar_voluntario(self, voluntario: Voluntario) -> None:
+        """Asigna un voluntario al animal si no lo estaba ya."""
         if voluntario not in self.voluntarios_asignados:
             self.voluntarios_asignados.append(voluntario)
 
     def deasignar_voluntario(self, voluntario: Voluntario) -> None:
+        """Quita un voluntario del animal; no hace nada si no estaba asignado."""
         if voluntario in self.voluntarios_asignados:
             self.voluntarios_asignados.remove(voluntario)
 
     def to_dict(self) -> dict:  
+        """Convierte el animal en un diccionario. Los voluntarios se guardan solo por DNI."""
         # Los voluntarios se guardan solo por DNI (referencia), no copiados.
         return {
             "id_chip": self.id_chip,
@@ -89,6 +99,7 @@ class Animal:
 
     @classmethod
     def from_dict(cls, datos: dict, voluntarios_por_dni: dict) -> "Animal": 
+        """Reconstruye un animal enlazando con los voluntarios ya creados (`voluntarios_por_dni`)."""
         return cls(
             id_chip=datos["id_chip"],
             nombre=datos["nombre"],
