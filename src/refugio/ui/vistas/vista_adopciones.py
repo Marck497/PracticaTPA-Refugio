@@ -220,17 +220,8 @@ class VistaAdopciones(Vista):
 
     def _guardar_modificacion(self, ventana, adopcion, entradas: dict) -> None:
         try:
-            dni, nombre, telefono, correo, max_adopciones, fecha = self._leer_datos(entradas)
-            relacionadas = [a for a in self.refugio.adopciones if a.adoptante.dni.upper() == dni]
-            if len(relacionadas) > max_adopciones:
-                raise ValueError("El máximo de adopciones no puede ser inferior a las registradas.")
-            # Compartimos los datos actualizados entre registros del mismo adoptante.
-            for registro in relacionadas:
-                registro.adoptante.nombre = nombre
-                registro.adoptante.telefono = telefono
-                registro.adoptante.correo = correo
-                registro.adoptante.max_adopciones = max_adopciones
-            adopcion.fecha = fecha
+            _dni, nombre, telefono, correo, max_adopciones, fecha = self._leer_datos(entradas)  # el DNI no se edita
+            self.refugio.modificar_adopcion(adopcion, nombre, telefono, correo, max_adopciones, fecha)
         except (ValueError, RefugioError) as e:
             self._mostrar_error(e)
             return
