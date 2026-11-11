@@ -13,7 +13,7 @@ from .protocolos import Resumible, mostrar_resumen
 from .excepciones import (
     AnimalNoEncontradoError,
     CapacidadSuperadaError,
-    ReglaInclumplidaError,
+    ReglaIncumplidaError,
     RefugioError,
 )
 

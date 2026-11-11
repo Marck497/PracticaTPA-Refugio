@@ -1,7 +1,7 @@
 import logging
 from datetime import date
 from .eventos import Observable
-from .excepciones import AnimalNoEncontradoError, CapacidadSuperadaError, ReglaInclumplidaError
+from .excepciones import AnimalNoEncontradoError, CapacidadSuperadaError, ReglaIncumplidaError
 from .modelo import Adopcion, Adoptante, Animal, Voluntario
 from .reglas import (
     AnimalDisponible,
@@ -144,7 +144,7 @@ class Refugio(Observable):
             raise AnimalNoEncontradoError(f"El animal {animal.id_chip} no está en el refugio.")
         if any(a.animal == animal for a in self.adopciones):
             logger.warning("Baja rechazada: %s tiene adopciones registradas", animal.id_chip)
-            raise ReglaInclumplidaError(
+            raise ReglaIncumplidaError(
                 f"No se puede eliminar a {animal.nombre} porque tiene una dopción registrada. "
                 "Elimina primero la adopción"
             )
@@ -206,7 +206,7 @@ class Refugio(Observable):
         relacionadas = [a for a in self.adopciones if a.adoptante == adopcion.adoptante]
         if len(relacionadas) > max_adopciones:
             logger.warning("Modificación rechazada: %s ya tiene %d adopciones", adopcion.adoptante.nombre, len(relacionadas))
-            raise ReglaInclumplidaError(
+            raise ReglaIncumplidaError(
                 f"El máximo de adopciones no puede ser inferior a las ya registradas ({len(relacionadas)})."
             )
         for registro in relacionadas:
@@ -223,7 +223,7 @@ class Refugio(Observable):
         for regla in reglas:
             try:
                 regla.comprobar(self, animal, persona)
-            except ReglaInclumplidaError as e:
+            except ReglaIncumplidaError as e:
                 logger.warning("%s rechazada: %s", operacion, e)
                 # raise para dejarlo seguir hacia arriba y conservar el traceback original
                 raise

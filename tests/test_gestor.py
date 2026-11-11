@@ -15,7 +15,7 @@ from refugio import (
     RefugioError,
     Voluntario,
 )
-from refugio.excepciones import ReglaInclumplidaError
+from refugio.excepciones import ReglaIncumplidaError
 
 
 def nuevo_animal(n: int) -> Animal:
@@ -106,11 +106,11 @@ def test_animal_no_encontrado_es_un_refugio_error():
 
 def test_regla_incumplida_es_un_refugio_error():
     # la interfaz solo captura RefugioError
-    assert issubclass(ReglaInclumplidaError, RefugioError)
+    assert issubclass(ReglaIncumplidaError, RefugioError)
 
 
 def test_regla_incumplida_sigue_siendo_un_value_error():
-    assert issubclass(ReglaInclumplidaError, ValueError)
+    assert issubclass(ReglaIncumplidaError, ValueError)
 
 
 def test_mostrar_animal_incluye_sus_datos(refugio_completo):
@@ -178,14 +178,14 @@ def test_tramitar_adopcion_sin_fecha_usa_la_de_hoy(refugio, animal, adoptante):
 def test_adoptar_animal_ya_adoptado_lanza_regla_incumplida(refugio, animal, adoptante):
     refugio.registrar_ingreso(animal)
     refugio.tramitar_adopcion("CHIP001", adoptante)
-    with pytest.raises(ReglaInclumplidaError):
+    with pytest.raises(ReglaIncumplidaError):
         refugio.tramitar_adopcion("CHIP001", adoptante)
 
 
 def test_adoptar_animal_no_disponible_no_crea_adopcion(refugio, animal, adoptante):
     animal.estado_adopcion = "en_proceso"
     refugio.registrar_ingreso(animal)
-    with pytest.raises(ReglaInclumplidaError):
+    with pytest.raises(ReglaIncumplidaError):
         refugio.tramitar_adopcion("CHIP001", adoptante)
     assert refugio.adopciones == []
 
@@ -236,7 +236,7 @@ def test_eliminar_animal_que_no_esta_lanza_error(refugio, animal):
 
 def test_eliminar_animal_con_adopcion_lanza_regla_incumplida(refugio_completo):
     luna = refugio_completo.buscar_animal_por_chip("CHIP002")
-    with pytest.raises(ReglaInclumplidaError):
+    with pytest.raises(ReglaIncumplidaError):
         refugio_completo.eliminar_animal(luna)
 
 
@@ -337,7 +337,7 @@ def test_cancelar_adopcion_emite_evento_adopcion(refugio_completo, eventos):
 
 
 def test_operacion_rechazada_no_emite_evento(refugio_completo, eventos, adoptante):
-    with pytest.raises(ReglaInclumplidaError):
+    with pytest.raises(ReglaIncumplidaError):
         refugio_completo.tramitar_adopcion("CHIP002", adoptante)
     assert eventos == []
 
@@ -396,7 +396,7 @@ def test_asignacion_rechazada_genera_warning(caplog, refugio):
     refugio.registrar_ingreso(nuevo_animal(2))
     refugio.asignar_voluntario(voluntario, "CHIP001")
     caplog.set_level(logging.INFO)
-    with pytest.raises(ReglaInclumplidaError):
+    with pytest.raises(ReglaIncumplidaError):
         refugio.asignar_voluntario(voluntario, "CHIP002")
     assert niveles(caplog) == ["WARNING"]
 
@@ -410,7 +410,7 @@ def test_adopcion_correcta_genera_info(caplog, refugio, animal, adoptante):
 
 def test_adopcion_de_animal_no_disponible_genera_warning(caplog, refugio_completo, adoptante):
     caplog.set_level(logging.INFO)
-    with pytest.raises(ReglaInclumplidaError):
+    with pytest.raises(ReglaIncumplidaError):
         refugio_completo.tramitar_adopcion("CHIP002", adoptante)
     assert niveles(caplog) == ["WARNING"]
     assert "no está disponible" in caplog.text
@@ -419,7 +419,7 @@ def test_adopcion_de_animal_no_disponible_genera_warning(caplog, refugio_complet
 def test_baja_rechazada_genera_warning(caplog, refugio_completo):
     luna = refugio_completo.buscar_animal_por_chip("CHIP002")
     caplog.set_level(logging.INFO)
-    with pytest.raises(ReglaInclumplidaError):
+    with pytest.raises(ReglaIncumplidaError):
         refugio_completo.eliminar_animal(luna)
     assert niveles(caplog) == ["WARNING"]
 
@@ -534,14 +534,14 @@ def test_maximo_menor_que_las_adopciones_registradas_lanza_regla_incumplida(
     refugio_completo, adoptante
 ):
     refugio_completo.tramitar_adopcion("CHIP003", adoptante, date(2026, 9, 21))
-    with pytest.raises(ReglaInclumplidaError):
+    with pytest.raises(ReglaIncumplidaError):
         modificar(refugio_completo, refugio_completo.adopciones[0], max_adopciones=1)
 
 
 def test_modificacion_rechazada_no_cambia_nada(refugio_completo, adoptante):
     refugio_completo.tramitar_adopcion("CHIP003", adoptante, date(2026, 9, 21))
     adopcion = refugio_completo.adopciones[0]
-    with pytest.raises(ReglaInclumplidaError):
+    with pytest.raises(ReglaIncumplidaError):
         modificar(refugio_completo, adopcion, max_adopciones=1, fecha=date(2026, 10, 1))
     assert adoptante.nombre == "Hugo"
     assert adoptante.max_adopciones == 3
@@ -563,6 +563,6 @@ def test_modificar_adopcion_genera_info(caplog, refugio_completo):
 def test_modificacion_de_adopcion_rechazada_genera_warning(caplog, refugio_completo, adoptante):
     refugio_completo.tramitar_adopcion("CHIP003", adoptante, date(2026, 9, 21))
     caplog.set_level(logging.INFO)
-    with pytest.raises(ReglaInclumplidaError):
+    with pytest.raises(ReglaIncumplidaError):
         modificar(refugio_completo, refugio_completo.adopciones[0], max_adopciones=1)
     assert niveles(caplog) == ["WARNING"]
