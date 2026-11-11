@@ -16,6 +16,8 @@ from .app import App
 logger = logging.getLogger(__name__)
 
 def crear_parser() -> argparse.ArgumentParser:
+    """Crea el analizador de argumentos de la línea de comandos."""
+
     parser = argparse.ArgumentParser(
         prog="python -m refugio.ui", 
         description="Gestión de un refugio de animales (interfaz gráfica)."
@@ -32,6 +34,7 @@ def crear_parser() -> argparse.ArgumentParser:
 
 def crear_o_cargar_refugio(config: Configuracion) -> Refugio:
     """Carga el archivo de datos; si todavía no existe, empieza con un refugio vacío."""
+
     ruta = Path(config.archivo_datos)
     if not ruta.exists():
         logger.info("No existe %s: se empieza con un refugio vacío", ruta)
@@ -47,6 +50,8 @@ def crear_o_cargar_refugio(config: Configuracion) -> Refugio:
     return refugio
 
 def main(argv: list[str] = None) -> None:
+    """Punto de entrada: lee los argumentos y la configuración y abre la ventana."""
+
     parser = crear_parser()
     args = parser.parse_args(argv)
     try:

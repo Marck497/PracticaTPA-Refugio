@@ -13,9 +13,13 @@ COLUMNAS = ("chip", "animal", "dni", "adoptante", "telefono", "correo", "fecha")
 
 
 class VistaAdopciones(Vista):
+    """Lista de adopciones: buscar, ordenar, registrar, modificar, eliminar y ver detalles."""
+
     titulo = "Adopciones"
 
     def construir(self) -> None:
+        """Crea la barra de búsqueda, los botones y la tabla de adopciones."""
+
         self._sort_col = None
         self._sort_reverse = False
 
@@ -265,6 +269,8 @@ class VistaAdopciones(Vista):
         messagebox.showinfo("Detalles de la adopción", mensaje)
 
     def refrescar(self) -> None:
+        """Vuelve a rellenar la tabla con las adopciones que cumplen el filtro actual."""
+
         filas = []
         for a in self._obtener_adopciones_filtradas():
             filas.append((

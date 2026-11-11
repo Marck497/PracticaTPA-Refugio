@@ -1,5 +1,5 @@
 """
-Apartado 4.2 - Persistencia del modelo en JSON.
+Persistencia del modelo en JSON.
 
 Se guarda y recupera el Refugio completo (animales, voluntarios, revisiones
 y adopciones) con el gestor de contexto `with open(...)`.
@@ -27,10 +27,12 @@ def guardar_datos(datos: dict, ruta: str) -> None:
     logger.info("Refugio guardado en %s (%d animales)", ruta, len(datos["animales"]))
 
 def guardar_refugio(refugio: Refugio, ruta: str) -> None:
+    """Guarda el refugio completo en un archivo JSON."""
     guardar_datos(refugio.to_dict(), ruta)
 
 
 def cargar_refugio(ruta: str) -> Refugio:
+    """Carga un refugio desde un archivo JSON, sin validar los animales."""
     with open(ruta, "r", encoding="utf-8") as f:
         datos = json.load(f)
     refugio = Refugio.from_dict(datos)

@@ -1,6 +1,9 @@
+"""Adoptante: persona que puede adoptar animales."""
+
 from .persona import Persona
 
 class Adoptante(Persona):
+    """Persona que adopta animales, con un máximo de adopciones permitidas."""
     def __init__(self, dni, nombre, telefono, correo, max_adopciones: int = 3):
         super().__init__(dni, nombre, telefono)
         if max_adopciones <= 0:
@@ -9,10 +12,12 @@ class Adoptante(Persona):
         self.max_adopciones = max_adopciones
 
     def descripcion(self) -> str:
+        """Texto que describe al adoptante y cuántos animales puede adoptar."""
         return (f"Adoptante {self.nombre} ({self.correo}): "
                 f"puede adoptar hasta {self.max_adopciones} animales")
 
     def to_dict(self) -> dict: 
+        """Convierte el adoptante en un diccionario listo para guardarse como JSON."""
         return {
             "dni": self.dni,
             "nombre": self.nombre,
@@ -23,6 +28,7 @@ class Adoptante(Persona):
 
     @classmethod
     def from_dict(cls, datos: dict) -> "Adoptante": 
+        """Reconstruye un adoptante a partir de un diccionario generado por `to_dict`."""
         return cls(
             dni=datos["dni"],
             nombre=datos["nombre"],

@@ -1,6 +1,10 @@
+"""Voluntario: persona que cuida de animales del refugio."""
+
 from .persona import Persona
 
 class Voluntario(Persona):
+    """Persona que cuida de animales del refugio, con un máximo de animales a su cargo."""
+
     def __init__(self, dni, nombre, telefono, area_asignada, max_animales: int = 5):
         super().__init__(dni, nombre, telefono)
         if max_animales <= 0:
@@ -9,10 +13,12 @@ class Voluntario(Persona):
         self.max_animales = max_animales
 
     def descripcion(self) -> str:
+        """Texto que describe al voluntrario, su área y cuántos animales puede cuidar."""
         return (f"Voluntario {self.nombre}: area {self.area_asignada}, "
                 f"hasta {self.max_animales} animales")
 
     def to_dict(self) -> dict:
+        """Convierte el voluntario en un diccionario listo para guardarse como JSON."""
         return {
             "dni": self.dni,
             "nombre": self.nombre,
@@ -23,6 +29,7 @@ class Voluntario(Persona):
 
     @classmethod
     def from_dict(cls, datos: dict) -> "Voluntario": 
+        """Reconstruye un voluntario a partir de un diccionario generado por `to_dict`."""
         return cls(
             dni=datos["dni"],
             nombre=datos["nombre"],

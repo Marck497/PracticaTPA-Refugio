@@ -1,5 +1,5 @@
 """
-Apartado 4.1 - Estructura genérica: repositorio tipado.
+Estructura genérica: repositorio tipado.
 
 Repositorio[T] guarda objetos de CUALQUIER tipo T del modelo (Animal,
 Voluntario, Adoptante...) indexados por una clave. La misma implementación
@@ -29,23 +29,27 @@ class Repositorio(Generic[T]):
         self._items: dict[str, T] = {}
 
     def anadir(self, item: T) -> None:
+        """Añade un elemento. Lanza `ElementoDuplicadoError` si su clave y existe."""
         k = self._clave(item)
         if k in self._items:
             raise ElementoDuplicadoError(f"Ya existe un elemento con clave {k!r}")
         self._items[k] = item
 
     def obtener(self, clave: str) -> T:
+        """Devuelve el elemento con esa clave o lanza `ElementoNoEncontradoError`."""
         try:
             return self._items[clave]
         except KeyError:
             raise ElementoNoEncontradoError(f"No hay ningún elemento con clave {clave!r}") from None
 
     def eliminar(self, clave: str) -> T:
+        """Quita el elemento con esa clave y lo devuelve."""
         item = self.obtener(clave)
         del self._items[clave]
         return item
 
     def todos(self) -> list[T]:
+        """Devuelve una  lista con todos los elementos."""
         return list(self._items.values())
 
     def __contains__(self, clave: str) -> bool:

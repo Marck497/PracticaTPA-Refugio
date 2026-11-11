@@ -21,13 +21,14 @@ class ReglaAdopcion(ABC):
     """Condición que debe cumplirse para tramitar una adopción."""
 
     @abstractmethod
-    def comprobar(seld, refugio: Refugio, animal: Animal, adoptante: Adoptante) -> None:
+    def comprobar(self, refugio: Refugio, animal: Animal, adoptante: Adoptante) -> None:
         """Lanza ReglaIncumplidaError si la adopción no está permitida."""
 
 class AnimalDisponible(ReglaAdopcion):
     """Sólo se puede adoptar un animal disponible."""
 
-    def comprobar(seld, refugio: Refugio, animal: Animal, adoptante: Adoptante) -> None:
+    def comprobar(self, refugio: Refugio, animal: Animal, adoptante: Adoptante) -> None:
+        """Rechaza la adopción si el animal no está disponible."""
         if not animal.esta_disponible():
             raise ReglaIncumplidaError(
                 f"El animal '{animal.nombre}' (chip {animal.id_chip}) no está disponible "
@@ -37,7 +38,8 @@ class AnimalDisponible(ReglaAdopcion):
 class LimiteAdopciones(ReglaAdopcion):
     """Un adoptante no puede superar su `max_adopciones`."""
 
-    def comprobar(seld, refugio: Refugio, animal: Animal, adoptante: Adoptante) -> None:
+    def comprobar(self, refugio: Refugio, animal: Animal, adoptante: Adoptante) -> None:
+        """Rechaza la adopción si el adoptante ya alcanzó su máximo de adopciones."""
         previas = sum(1 for a in refugio.adopciones if a.adoptante == adoptante)
         if previas >= adoptante.max_adopciones:
             raise ReglaIncumplidaError(
@@ -56,6 +58,7 @@ class LimiteVoluntario(ReglaAsignacion):
     """Un voluntario no puede superar su `max_animales`."""
 
     def comprobar(self, refugio: Refugio, animal: Animal, voluntario: Voluntario) -> None:
+        """Rechaza la asignación si el voluntario ya cuida su máximo de animales."""
         if voluntario in animal.voluntarios_asignados:
             # Ya lo tiene asignado.
             return

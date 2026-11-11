@@ -1,3 +1,5 @@
+"""Adopción: registro de que un adoptante adoptó a un animal."""
+
 from datetime import date
 from .animal import Animal
 from .adoptante import Adoptante
@@ -14,6 +16,7 @@ class Adopcion:
         self.fecha = fecha
 
     def to_dict(self) -> dict:
+        """Convierte la adopción en un diccionario. El animal se guarda solo por su chip."""
         # El animal se guarda solo por su chip: al cargar se enlaza con el
         # MISMO objeto Animal que ya está en el refugio (sin duplicarlo).
         return {
@@ -24,6 +27,7 @@ class Adopcion:
 
     @classmethod
     def from_dict(cls, datos: dict, animales_por_chip: dict) -> "Adopcion": 
+        """Reconstruye una adopción enlazando con el mismo objeto Animal del refugio (`animales_por_chip`)."""
         return cls(
             animal=animales_por_chip[datos["id_chip"]],
             adoptante=Adoptante.from_dict(datos["adoptante"]),

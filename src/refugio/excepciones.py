@@ -18,5 +18,3 @@ class ReglaIncumplidaError(RefugioError, ValueError):
     Hereda también de ValueError para no romper el código que ya capturaba el ValueError.
     """
 
-# Nombre antiguo (con errata), se mantiene para no romper código que aún lo use
-ReglaInclumplidaError = ReglaIncumplidaError

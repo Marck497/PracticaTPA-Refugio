@@ -17,6 +17,7 @@ class TextoHandler(logging.Handler):
         self.cola: queue.Queue[str] = queue.Queue()
 
     def emit(self, record: logging.LogRecord) -> None:
+        """Guarda el mensaje formateado en la cola; el panel lo escribe desde el hilo principal."""
         self.cola.put(self.format(record))
 
 

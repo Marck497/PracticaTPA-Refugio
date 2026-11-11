@@ -1,3 +1,5 @@
+"""Refugio: el agregado raíz que coordina animales, vountarios y adopciones."""
+
 import logging
 from datetime import date
 from .eventos import Observable
@@ -51,6 +53,7 @@ class Refugio(Observable):
 
     @property
     def capacidad_maxima(self) -> int:
+        """Número máximo de animales que admite el refugio (entre 0 y 24)."""
         return self.__capacidad_maxima
 
     @capacidad_maxima.setter
@@ -145,8 +148,8 @@ class Refugio(Observable):
         if any(a.animal == animal for a in self.adopciones):
             logger.warning("Baja rechazada: %s tiene adopciones registradas", animal.id_chip)
             raise ReglaIncumplidaError(
-                f"No se puede eliminar a {animal.nombre} porque tiene una dopción registrada. "
-                "Elimina primero la adopción"
+                f"No se puede eliminar a {animal.nombre} porque tiene una adopción registrada. "
+                "Elimina primero la adopción."
             )
         self.animales.remove(animal)
         logger.info("Animal eliminado: %s (%s)", animal.nombre, animal.id_chip)
@@ -254,6 +257,7 @@ class Refugio(Observable):
         )
 
     def to_dict(self) -> dict: 
+        """COnvierte el refugio en un diccionario listo para guardarse como JSON."""
         # Voluntarios registrados + los asignados directamente a algún animal
         todos = {v.dni: v for v in self.voluntarios}
         for animal in self.animales:
@@ -269,6 +273,7 @@ class Refugio(Observable):
 
     @classmethod
     def from_dict(cls, datos: dict) -> "Refugio":
+        """Reconstruye un refugio a partir de un diccionario generado por `to_dict`."""
         voluntarios = [Voluntario.from_dict(v) for v in datos["voluntarios"]]
         por_dni = {v.dni: v for v in voluntarios}
         animales = [Animal.from_dict(a, por_dni) for a in datos["animales"]]
