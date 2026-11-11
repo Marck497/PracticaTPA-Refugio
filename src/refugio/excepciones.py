@@ -12,8 +12,11 @@ class CapacidadSuperadaError(RefugioError):
 class AnimalNoEncontradoError(RefugioError):
     """Se lanza cuando no se encuentra un animal por nombre o por chip."""
 
-class ReglaInclumplidaError(RefugioError, ValueError):
+class ReglaIncumplidaError(RefugioError, ValueError):
     """Una regla de negocio impide la operación (límite alcanzado, animal no disponible...).
     
     Hereda también de ValueError para no romper el código que ya capturaba el ValueError.
     """
+
+# Nombre antiguo (con errata), se mantiene para no romper código que aún lo use
+ReglaInclumplidaError = ReglaIncumplidaError

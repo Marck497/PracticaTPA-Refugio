@@ -11,7 +11,7 @@ from __future__ import annotations
 from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING
 
-from .excepciones import ReglaInclumplidaError
+from .excepciones import ReglaIncumplidaError
 
 if TYPE_CHECKING:
     from .gestor import Refugio
@@ -29,7 +29,7 @@ class AnimalDisponible(ReglaAdopcion):
 
     def comprobar(seld, refugio: Refugio, animal: Animal, adoptante: Adoptante) -> None:
         if not animal.esta_disponible():
-            raise ReglaInclumplidaError(
+            raise ReglaIncumplidaError(
                 f"El animal '{animal.nombre}' (chip {animal.id_chip}) no está disponible "
                 f"para adopción (estado actual: {animal.estado_adopcion})."
             )
@@ -40,7 +40,7 @@ class LimiteAdopciones(ReglaAdopcion):
     def comprobar(seld, refugio: Refugio, animal: Animal, adoptante: Adoptante) -> None:
         previas = sum(1 for a in refugio.adopciones if a.adoptante == adoptante)
         if previas >= adoptante.max_adopciones:
-            raise ReglaInclumplidaError(
+            raise ReglaIncumplidaError(
                 f"{adoptante.nombre} ya tiene {previas} adopciones y su máximo es "
                 f"{adoptante.max_adopciones}."
             )
@@ -62,7 +62,7 @@ class LimiteVoluntario(ReglaAsignacion):
 
         asignados = sum(1 for a in refugio.animales if voluntario in a.voluntarios_asignados)
         if asignados >= voluntario.max_animales:
-            raise ReglaInclumplidaError(
+            raise ReglaIncumplidaError(
                 f"{voluntario.nombre} ya tiene {asignados} animales asignados y su máximo es "
                 f"{voluntario.max_animales}."
             )
