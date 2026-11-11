@@ -13,10 +13,18 @@ from .validacion import ChipAusenteError, ChipMalFormadoError, validar_chip
 
 logger = logging.getLogger(__name__)
 
-def guardar_refugio(refugio: Refugio, ruta: str) -> None:
+def guardar_datos(datos: dict, ruta: str) -> None:
+    """Escribe en disco un diccionario ya generado con `Refugio.to_dict()`.
+
+    Se separa de `guradar_refugio` para poder hacer la "foto" de los datos en 
+    el hilo de la interfaz y escribirla después en un hilo secundario.
+    """
     with open(ruta, "w", encoding="utf-8") as f:
-        json.dump(refugio.to_dict(), f, ensure_ascii=False, indent=2)
-    logger.info("Refugio guardado en %s (%d animales)", ruta, len(refugio.animales))
+        json.dump(datos, f, ensure_ascii=False, indent=2)
+    logger.info("Refugio guardado en %s (%d animales)", ruta, len(datos["animales"]))
+
+def guardar_refugio(refugio: Refugio, ruta: str) -> None:
+    guardar_datos(refugio.to_dict(), ruta)
 
 
 def cargar_refugio(ruta: str) -> Refugio:
@@ -54,4 +62,9 @@ def cargar_refugio_validando(ruta: str) -> tuple[Refugio, list[tuple[str, Except
         logger.warning("Registro descartado en %s: %s", donde, error)
 
     datos["animales"] = validos
-    return Refugio.from_dict(datos), rechazados
+    refugio = Refugio.from_dict(datos)
+    logger.info(
+        "Refugio cargado desde %s (%d animales, %d descartados)",
+        ruta, len(refugio.animales), len(rechazados)
+    )
+    return refugio, rechazados
