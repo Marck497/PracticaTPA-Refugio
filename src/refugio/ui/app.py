@@ -7,6 +7,7 @@ from tkinter import filedialog, messagebox, ttk
 
 from refugio.gestor import Refugio
 from refugio.persistencia import cargar_refugio_validando, guardar_datos
+from .panel_datos import PanelDatos
 from .panel_log import PanelLog
 from .segundo_plano import TareaSegundoPlano
 from .vistas import Vista, VistaAdopciones, VistaAnimales, VistaVoluntarios
@@ -24,11 +25,12 @@ class App(tk.Tk):
         self.geometry("900x500")
         self.refugio = refugio
         PanelLog(self).pack(side="bottom", fill="x")
+        self.panel_datos = PanelDatos(self, refugio)
+        self.panel_datos.pack(side="top", fill="x", padx=6, pady=(6, 0))
         menu = ttk.Frame(self, padding=6)
         menu.pack(side="left", fill="y")
         self.contenido = ttk.Frame(self)
         self.contenido.pack(side="right", fill="both", expand=True)
-        # Más adelante aquí panel de datos arriba y panel de log abajo
 
         self.vistas: dict[str, Vista] = {}
         for clase in self.VISTAS:
@@ -89,6 +91,7 @@ class App(tk.Tk):
         refugio, rechazados = resultado
         self._ocupado(False)
         self.refugio = refugio
+        self.panel_datos.cambiar_refugio(refugio)
         for vista in self.vistas.values():
             vista.refugio = refugio
         self.title(f"Gestión de refugio - {refugio.nombre}")
