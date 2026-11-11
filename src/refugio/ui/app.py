@@ -6,7 +6,7 @@ from functools import partial
 from tkinter import filedialog, messagebox, ttk
 
 from refugio.gestor import Refugio
-from refugio.persistencia import cargar_refugio_validando, guardar_datos
+from refugio.persistencia import cargar_refugio_validando, guardar_datos, guardar_refugio
 from .panel_datos import PanelDatos
 from .panel_log import PanelLog
 from .segundo_plano import TareaSegundoPlano
@@ -19,8 +19,12 @@ TIPOS_JSON = [("Archivos JSON", "*.json")]
 class App(tk.Tk):
     VISTAS: tuple[type[Vista], ...] = (VistaAnimales, VistaVoluntarios, VistaAdopciones)
 
-    def __init__(self, refugio: Refugio):
+    def __init__(self, refugio: Refugio, archivo_datos: str = None):
+        """`archivo_datos`: si se indica, los datos se guardan ahí al cerrar la ventana
+        (el modo demo no lo indica, así que no escribe nada en disco)."""
         super().__init__()
+        self.archivo_datos = archivo_datos
+        self.protocol("WM_DELETE_WINDOW", self._cerrar)
         self.title(f"Gestión de refugio - {refugio.nombre}")
         self.geometry("900x500")
         self.refugio = refugio
@@ -59,6 +63,20 @@ class App(tk.Tk):
         vista = self.vistas[titulo]
         vista.refrescar()
         vista.tkraise()
+
+    def _cerrar(self) -> None:
+        """Al cerrar la ventana guarda los datos en el archivo configurado (salvo en modo demo)."""
+        if self.archivo_datos:
+            try:
+                guardar_refugio(self.refugio, self.archivo_datos)
+            except OSError as e:
+                logger.error("No se pudo guardar %s: %s", self.archivo_datos, e)
+                if not messagebox.askyesno(
+                    "Error al guardar",
+                    f"No se pudieron guardar los datos:\n{e}\n\n¿Cerrar igualmente?",
+                ):
+                    return
+        self.destroy()
 
     def _guardar(self) -> None:
         ruta = filedialog.asksaveasfilename(

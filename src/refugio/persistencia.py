@@ -7,6 +7,7 @@ y adopciones) con el gestor de contexto `with open(...)`.
 
 import json
 import logging
+import os
 
 from .gestor import Refugio
 from .validacion import ChipAusenteError, ChipMalFormadoError, validar_chip
@@ -19,8 +20,10 @@ def guardar_datos(datos: dict, ruta: str) -> None:
     Se separa de `guradar_refugio` para poder hacer la "foto" de los datos en 
     el hilo de la interfaz y escribirla después en un hilo secundario.
     """
-    with open(ruta, "w", encoding="utf-8") as f:
+    temporal = f"{ruta}.tmp"
+    with open(temporal, "w", encoding="utf-8") as f:
         json.dump(datos, f, ensure_ascii=False, indent=2)
+    os.replace(temporal, ruta)
     logger.info("Refugio guardado en %s (%d animales)", ruta, len(datos["animales"]))
 
 def guardar_refugio(refugio: Refugio, ruta: str) -> None:

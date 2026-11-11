@@ -1,0 +1,7 @@
+{
+    "nivel_log": "INFO",
+    "archivo_log": "refugio.log",
+    "archivo_datos": "refugio.json",
+    "nombre_refugio": "Refugio Esperanza",
+    "capacidad_maxima": 24
+}
