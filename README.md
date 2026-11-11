@@ -41,6 +41,30 @@ Cada prueba es un script que imprime su resultado. Se ejecutan como módulos (co
 
 **Ficheros que generan las pruebas.** Las pruebas del 4 y del 6 crean `refugio.json` y `datos_invalidos.json` en `src/pruebas/` cada vez que se ejecutan. No hay que mantenerlos a mano. La prueba del 6 reutiliza `construir_refugio()` de la del 4, y necesita `regex` instalada.
 
+### Tests automáticos (pytest)
+
+Se lanzan **desde la raíz del repositorio** (no desde `src/`). `pytest.ini` añade `src` al path, así que no hace falta instalar el paquete:
+
+```powershell
+python -m pip install -r requirements.txt
+python -m pytest
+python -m pytest --cov=refugio --cov-report=term-missing   # con cobertura
+```
+
+| Fichero | Qué comprueba |
+|---|---|
+| `tests/conftest.py` | Fixtures compartidas: animal, adoptante, voluntario, revisión, refugio vacío y refugio con datos |
+| `tests/test_modelo.py` | `Animal`, `Persona`, `Voluntario`, `Adoptante`, revisiones, adopciones y el protocolo `Resumible` |
+| `tests/test_gestor.py` | `Refugio`: capacidad, búsquedas, voluntarios, adopciones, bajas, informe, eventos del Observer y mensajes de log (`caplog`) |
+| `tests/test_reglas.py` | Reglas de negocio (Strategy): animal disponible, límite de adopciones y de voluntario, sustituir reglas |
+| `tests/test_eventos.py` | `Observable`: suscribir, desuscribir y notificar |
+| `tests/test_persistencia.py` | Guardar, cargar y cargar validando (en `tmp_path`, sin dejar ficheros en el repo), y sus mensajes de log |
+| `tests/test_ui.py` | `TareaSegundoPlano` (resultado y errores vuelven al hilo principal) y `TextoHandler`, sin abrir ventanas |
+| `tests/test_api.py` | Que todo lo listado en `__all__` existe en el paquete |
+| `tests/test_validacion.py` | Chips válidos e inválidos |
+| `tests/test_repositorio.py` | `Repositorio[T]` |
+| `tests/test_integracion.py` | Flujo completo: ingreso, adopción, guardar, cargar y comparar |
+
 ### Usarlo como módulo (p. ej. desde una UI)
 
 ```python
