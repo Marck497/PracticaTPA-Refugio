@@ -7,6 +7,7 @@ import pytest
 
 from refugio import (
     Adopcion,
+    Adoptante,
     Animal,
     AnimalNoEncontradoError,
     CapacidadSuperadaError,
@@ -420,4 +421,148 @@ def test_baja_rechazada_genera_warning(caplog, refugio_completo):
     caplog.set_level(logging.INFO)
     with pytest.raises(ReglaInclumplidaError):
         refugio_completo.eliminar_animal(luna)
+    assert niveles(caplog) == ["WARNING"]
+
+
+# Modificar voluntarios
+
+def test_modificar_voluntario_cambia_sus_datos(refugio_completo, voluntario):
+    refugio_completo.modificar_voluntario(voluntario, "Marcos P.", "699999999", "Gatos")
+    assert (voluntario.nombre, voluntario.telefono, voluntario.area_asignada) == (
+        "Marcos P.",
+        "699999999",
+        "Gatos",
+    )
+
+
+def test_modificar_voluntario_no_cambia_el_dni(refugio_completo, voluntario):
+    refugio_completo.modificar_voluntario(voluntario, "Marcos P.", "699999999", "Gatos")
+    assert voluntario.dni == "00000001X"
+
+
+def test_modificar_voluntario_se_ve_desde_sus_animales(refugio_completo, voluntario):
+    refugio_completo.modificar_voluntario(voluntario, "Marcos P.", "699999999", "Gatos")
+    rex = refugio_completo.buscar_animal_por_chip("CHIP001")
+    assert rex.voluntarios_asignados[0].nombre == "Marcos P."
+
+
+def test_modificar_voluntario_no_registrado_lanza_error(refugio, voluntario):
+    with pytest.raises(ValueError):
+        refugio.modificar_voluntario(voluntario, "Marcos P.", "699999999", "Gatos")
+
+
+def test_modificar_voluntario_emite_evento_voluntario(refugio_completo, eventos, voluntario):
+    refugio_completo.modificar_voluntario(voluntario, "Marcos P.", "699999999", "Gatos")
+    assert eventos == [("voluntario", {"voluntario": voluntario})]
+
+
+def test_modificar_voluntario_genera_info(caplog, refugio_completo, voluntario):
+    caplog.set_level(logging.INFO)
+    refugio_completo.modificar_voluntario(voluntario, "Marcos P.", "699999999", "Gatos")
+    assert niveles(caplog) == ["INFO"]
+
+
+# Modificar adopciones
+
+def modificar(refugio, adopcion, max_adopciones=3, fecha=date(2026, 10, 1)):
+    refugio.modificar_adopcion(
+        adopcion, "Hugo L.", "622222222", "hugo.l@example.com", max_adopciones, fecha
+    )
+
+
+def test_modificar_adopcion_cambia_la_fecha(refugio_completo):
+    adopcion = refugio_completo.adopciones[0]
+    modificar(refugio_completo, adopcion, fecha=date(2026, 10, 1))
+    assert adopcion.fecha == date(2026, 10, 1)
+
+
+def test_modificar_adopcion_cambia_los_datos_del_adoptante(refugio_completo, adoptante):
+    modificar(refugio_completo, refugio_completo.adopciones[0], max_adopciones=5)
+    assert (adoptante.nombre, adoptante.telefono, adoptante.correo, adoptante.max_adopciones) == (
+        "Hugo L.",
+        "622222222",
+        "hugo.l@example.com",
+        5,
+    )
+
+
+def test_modificar_adopcion_no_cambia_el_dni_del_adoptante(refugio_completo, adoptante):
+    modificar(refugio_completo, refugio_completo.adopciones[0])
+    assert adoptante.dni == "90000005H"
+
+
+def test_modificar_adopcion_actualiza_todas_las_del_mismo_adoptante(refugio_completo):
+    # dos objetos Adoptante distintos con el mismo DNI son la misma persona
+    otro = Adoptante("90000005H", "Hugo", "611000005", "hugo@example.com")
+    segunda = refugio_completo.tramitar_adopcion("CHIP003", otro, date(2026, 9, 21))
+    modificar(refugio_completo, refugio_completo.adopciones[0])
+    assert segunda.adoptante.nombre == "Hugo L."
+
+
+def test_modificar_adopcion_solo_cambia_la_fecha_de_esa_adopcion(refugio_completo, adoptante):
+    segunda = refugio_completo.tramitar_adopcion("CHIP003", adoptante, date(2026, 9, 21))
+    modificar(refugio_completo, refugio_completo.adopciones[0], fecha=date(2026, 10, 1))
+    assert segunda.fecha == date(2026, 9, 21)
+
+
+def test_modificar_adopcion_no_toca_otros_adoptantes(refugio_completo):
+    paco = Adoptante("11111111A", "Paco", "767859487", "paco@example.com")
+    refugio_completo.tramitar_adopcion("CHIP003", paco, date(2026, 9, 21))
+    modificar(refugio_completo, refugio_completo.adopciones[0])
+    assert paco.nombre == "Paco"
+
+
+def test_modificar_adopcion_no_registrada_lanza_error(refugio, animal, adoptante):
+    adopcion = Adopcion(animal, adoptante, date(2026, 9, 20))
+    with pytest.raises(ValueError):
+        modificar(refugio, adopcion)
+
+
+@pytest.mark.parametrize("maximo", [0, -1])
+def test_modificar_adopcion_con_maximo_no_positivo_lanza_error(refugio_completo, maximo):
+    with pytest.raises(ValueError):
+        modificar(refugio_completo, refugio_completo.adopciones[0], max_adopciones=maximo)
+
+
+def test_maximo_igual_a_las_adopciones_registradas_es_valido(refugio_completo, adoptante):
+    refugio_completo.tramitar_adopcion("CHIP003", adoptante, date(2026, 9, 21))
+    modificar(refugio_completo, refugio_completo.adopciones[0], max_adopciones=2)
+    assert adoptante.max_adopciones == 2
+
+
+def test_maximo_menor_que_las_adopciones_registradas_lanza_regla_incumplida(
+    refugio_completo, adoptante
+):
+    refugio_completo.tramitar_adopcion("CHIP003", adoptante, date(2026, 9, 21))
+    with pytest.raises(ReglaInclumplidaError):
+        modificar(refugio_completo, refugio_completo.adopciones[0], max_adopciones=1)
+
+
+def test_modificacion_rechazada_no_cambia_nada(refugio_completo, adoptante):
+    refugio_completo.tramitar_adopcion("CHIP003", adoptante, date(2026, 9, 21))
+    adopcion = refugio_completo.adopciones[0]
+    with pytest.raises(ReglaInclumplidaError):
+        modificar(refugio_completo, adopcion, max_adopciones=1, fecha=date(2026, 10, 1))
+    assert adoptante.nombre == "Hugo"
+    assert adoptante.max_adopciones == 3
+    assert adopcion.fecha == date(2026, 9, 20)
+
+
+def test_modificar_adopcion_emite_evento_adopcion(refugio_completo, eventos):
+    adopcion = refugio_completo.adopciones[0]
+    modificar(refugio_completo, adopcion)
+    assert eventos == [("adopcion", {"adopcion": adopcion})]
+
+
+def test_modificar_adopcion_genera_info(caplog, refugio_completo):
+    caplog.set_level(logging.INFO)
+    modificar(refugio_completo, refugio_completo.adopciones[0])
+    assert niveles(caplog) == ["INFO"]
+
+
+def test_modificacion_de_adopcion_rechazada_genera_warning(caplog, refugio_completo, adoptante):
+    refugio_completo.tramitar_adopcion("CHIP003", adoptante, date(2026, 9, 21))
+    caplog.set_level(logging.INFO)
+    with pytest.raises(ReglaInclumplidaError):
+        modificar(refugio_completo, refugio_completo.adopciones[0], max_adopciones=1)
     assert niveles(caplog) == ["WARNING"]
