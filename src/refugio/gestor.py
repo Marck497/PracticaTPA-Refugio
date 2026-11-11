@@ -182,6 +182,42 @@ class Refugio(Observable):
         logger.info("Voluntario eliminado: %s", voluntario.nombre)
         self._notificar("voluntario", voluntario=voluntario)
 
+    def modificar_voluntario(
+            self, voluntario: Voluntario, nombre: str, telefono: str, area_asignada: str
+    ) -> None:
+        """Actualiza los datos editables de un voluntario registrado"""
+        if voluntario not in self.voluntarios:
+            raise ValueError(f"{voluntario.nombre} no está registrado en el refugio.")
+        voluntario.nombre = nombre
+        voluntario.telefono = telefono
+        voluntario.area_asignada = area_asignada
+        logger.info("Voluntario modificado: %s (%s)", voluntario.nombre, voluntario.dni)
+        self._notificar("voluntario", voluntario=voluntario)
+
+    def modificar_adopcion(
+            self, adopcion: Adopcion, nombre: str, telefono: str, correo: str,
+            max_adopciones: int, fecha: date
+    ) -> None:
+        """Actualiza la fecha de una adopción y los datos de su adoptante."""
+        if adopcion not in self.adopciones:
+            raise ValueError("Esa adopción no está registrada en el refugio.")
+        if max_adopciones <= 0:
+            raise ValueError("El máximo de adopciones debe ser positivo.")
+        relacionadas = [a for a in self.adopciones if a.adoptante == adopcion.adoptante]
+        if len(relacionadas) > max_adopciones:
+            logger.warning("Modificación rechazada: %s ya tiene %d adopciones", adopcion.adoptante.nombre, len(relacionadas))
+            raise ReglaInclumplidaError(
+                f"El máximo de adopciones no puede ser inferior a las ya registradas ({len(relacionadas)})."
+            )
+        for registro in relacionadas:
+            registro.adoptante.nombre = nombre
+            registro.adoptante.telefono = telefono
+            registro.adoptante.correo = correo
+            registro.adoptante.max_adopciones = max_adopciones
+        adopcion.fecha = fecha
+        logger.info("Adopción modificada: %s (adoptante %s)", adopcion.animal.id_chip, nombre)
+        self._notificar("adopcion", adopcion=adopcion)
+
     def _aplicar_reglas(self, operacion: str, reglas: list, animal: Animal, persona) -> None:
         """Pasa todas las reglas. Si alguna falla, lo registra en el log y relanza el error"""
         for regla in reglas:

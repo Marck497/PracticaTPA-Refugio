@@ -362,10 +362,11 @@ class VistaVoluntarios(Vista):
             self.mostrar_error(ValueError("El teléfono debe contener exactamente 9 dígitos numéricos."))
             return
 
-        voluntario.nombre = nombre
-        voluntario.telefono = telefono
-        voluntario.area_asignada = area
-
+        try:
+            self.refugio.modificar_voluntario(voluntario, nombre, telefono, area)
+        except (ValueError, RefugioError) as e:
+            self.mostrar_error(e)
+            return
         ventana.destroy()
         self.refrescar()
 
